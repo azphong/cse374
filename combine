@@ -1,0 +1,13 @@
+#!/bin/bash
+if [ -e "$1" ]; then
+  echo "Error: Output file should not exist" >&2
+  exit 1
+fi
+if [ $# -lt 2 ]; then
+  echo "Usage: combine outputfilename [inputfilename ...]" >&2
+  exit 1
+fi
+output="$1"
+shift
+cat "$@" &>> $output
+exit 0
