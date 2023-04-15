@@ -1,9 +1,24 @@
 #!/bin/bash
-if [ $# -eq 0 ]; then
+while [ ! -f "$1" ]; do
+  echo "error: "$1" does not exist - skipping" >&2
+  shift
+done
+
+if [ $# -ne 1 ]; then
   echo "Usage: spellcheck filename ..." >&2
   exit 1
 fi
-if [ ! -f $1 ]; then
-  echo "Error: invalid input" >&2
-  exit 1
-fi 
+
+while read line; do
+  for word in $line;  do
+    if ! grep -qi $word /usr/share/dict/words; then
+      if [ ! -f "$1".spelling ]; then
+        echo "creating "$1".spelling"
+      else
+	echo "replacing "$1".spelling"
+      fi
+      echo $word >> "$1".spelling
+    fi
+  done
+done < "$1"
+exit 0
