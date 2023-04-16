@@ -1,24 +1,35 @@
 #!/bin/bash
-while [ ! -f "$1" ]; do
-  echo "error: "$1" does not exist - skipping" >&2
-  shift
-done
 
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
   echo "Usage: spellcheck filename ..." >&2
   exit 1
 fi
-
-while read line; do
-  for word in $line;  do
-    if ! grep -qi $word /usr/share/dict/words; then
-      if [ ! -f "$1".spelling ]; then
-        echo "creating "$1".spelling"
-      else
-	echo "replacing "$1".spelling"
-      fi
-      echo $word >> "$1".spelling
-    fi
+while [ $# -gt 0 ]; do
+  while [ ! -f "$1" ]; do
+    echo "error: "$1" does not exist - skipping" >&2
+    shift
   done
-done < "$1"
+  if [ ! -f "$1".spelling ]; then
+    echo "creating "$1".spelling"
+  else
+    echo "replacing "$1".spelling"
+    rm "$1".spelling
+    touch "$1".spelling
+  fi
+  count=0
+  unique_count=0
+  while read line; do
+    for word in $line; do
+      if ! grep -qi $word /usr/share/dict/words; then
+        if ! grep -qi $word "$1".spelling; then
+	  let "unique_count += 1"
+	fi
+	echo $word >> "$1".spelling
+	let "count += 1"
+      fi
+    done
+  done < "$1"
+  shift
+  printf 'processed $1 and found %i spelling errors %i of which are unique' "$count $unique_count"
+done
 exit 0
