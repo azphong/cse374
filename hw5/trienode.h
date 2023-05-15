@@ -10,6 +10,7 @@
 
 #define MAXLEN 50
 #define BRANCHES 9
+#define BRANCH_OFFSET 2
 
 // trieNode is one node in an 9-tree, where branches correspond to
 // # and the T9 alphabet.

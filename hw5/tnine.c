@@ -30,8 +30,10 @@ int main(int argc, char **argv) {
   }
 
   // build the trie
+  wordTrie = build_tree(dictionary);
 
   // run interactive session
+  run_session(wordTrie);
 
   // clean up
 
@@ -39,7 +41,21 @@ int main(int argc, char **argv) {
   return(EXIT_SUCCESS);
 }
 
-
+void run_session(trieNode* wordTrie) {
+  char input[MAXLEN];
+  char prev_input[MAXLEN];
+  printf("Enter \"exit\" to quit.\n");
+  while(strncmp(input, "exit", MAXLEN) != 0 && *input != EOF) {
+    printf("Enter Key Sequence (or \"#\" for next word):\n> ");
+    scanf("%s", input);
+    if (strncmp(input, "#", MAXLEN) == 0) {
+      strncat(prev_input, input, MAXLEN);
+      printf("%s\n", get_word(wordTrie, prev_input));
+    } else {
+      printf("%s\n", get_word(wordTrie, input));
+    }
+  }
+}
 
 
 

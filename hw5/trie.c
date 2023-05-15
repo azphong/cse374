@@ -10,7 +10,7 @@
 
 /* You'll want to prototype any helper functions you need here */
 
-trieNode* newNode(char* word);
+trieNode* newNode();
 
 int toNum(char ch);
 
@@ -19,7 +19,8 @@ int toNum(char ch);
 
 trieNode* newNode() {
   trieNode* result = (trieNode*) malloc(sizeof(trieNode));
-  result = { NULL, { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } };
+  result -> word = NULL;
+  result -> branches = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
   return result;
 }
 
@@ -31,36 +32,49 @@ int toNum(char ch) {
 
 trieNode* build_tree(FILE *dict) {
   char word[MAXLEN];
-  int code;
-  *trieNode root;
-  *trieNode curr;
+  int branch_index;
+  trieNode* root;
+  trieNode* curr;
 
-  if(fp == NULL) { return NULL; }
+  if(dict == NULL) { return NULL; }
 
   root = newNode();
-  while(fgets(word, MAXLEN, fp)) {
+  while(fgets(word, MAXLEN, dict)) {
     curr = root;
     for(int i = 0; i < strlen(word); i++) {
-      code = toNum(word[i]);
-      if(curr.branches[code - 2] == NULL) { curr.branches[code - 2] = newNode(); }
-      curr = curr.branches[code - 2];
+      branch_index = toNum(word[i]) - BRANCH_OFFSET;
+      if(curr -> branches[branch_index] == NULL) { curr -> branches[branch_index] = newNode(); }
+      curr = curr -> branches[branch_index];
     }
-    while(curr.word != NULL) {
-      if(curr.branches[BRANCHES] == NULL) { curr.branches[BRANCHES] = newNode(); }
-      curr = curr.branches[BRANCHES];
+    while(curr -> word != NULL) {
+      if(curr -> branches[BRANCHES] == NULL) { curr -> branches[BRANCHES] = newNode(); }
+      curr = curr -> branches[BRANCHES];
     }
-    curr.word = word;
+    curr -> word = word;
   }
 
   return root;
 }
 
 char* get_word(trieNode* root, char* pattern) {
-  *trieNode result;
+  trieNode* result;
+  char ch;
   result = root;
   for(int i = 0; i < strlen(pattern); i++) {
-    if(result == NULL) {
-      
+    ch = pattern[i];
+    if((int)(ch) >= BRANCH_OFFSET && (int)(ch) <= BRANCHES) {
+      result = result -> branches[(int)(ch) - BRANCH_OFFSET];
+      if(result == NULL) { return "Not found in current dictionary."; }
+    } else if(ch == '#') {
+      result = result -> branches[BRANCHES];
+      if(result == NULL) { return "There are no more T9onyms."; }
+    } else {
+      return "Illegal input character: %c", ch;
     }
   }
+  return result -> word;
+}
+
+void free_tree(trieNode* root) {
+  
 }
