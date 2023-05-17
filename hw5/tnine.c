@@ -1,5 +1,5 @@
 /* tnine is a program that drives a trie / t9 program.  This code
-   will build a trie, according to trienode.  It will also run
+   will build a trie, according to trienode. It will also run
    an interactive session where the user can retrieve words using
    t9 sequences.
    CSE374, HW5, 22wi 
@@ -36,25 +36,37 @@ int main(int argc, char **argv) {
   run_session(wordTrie);
 
   // clean up
-
+  free_tree(wordTrie);
   
   return(EXIT_SUCCESS);
 }
 
 void run_session(trieNode* wordTrie) {
   char input[MAXLEN];
-  char prev_input[MAXLEN];
+  char* prev_input = NULL;
+  int length;
   printf("Enter \"exit\" to quit.\n");
   while(strncmp(input, "exit", MAXLEN) != 0 && *input != EOF) {
     printf("Enter Key Sequence (or \"#\" for next word):\n> ");
     scanf("%s", input);
-    if (strncmp(input, "#", MAXLEN) == 0) {
-      strncat(prev_input, input, MAXLEN);
-      printf("%s\n", get_word(wordTrie, prev_input));
-    } else {
+    length = strlen(input);
+    if(prev_input == NULL) {
+      prev_input = (char*) malloc(length);
+      strncpy(prev_input, input, length);
       printf("%s\n", get_word(wordTrie, input));
+    } else {
+      if (strncmp(input, "#", length) == 0) {
+        strncat(prev_input, input, length);
+	strncpy(input, prev_input, strlen(prev_input - 1));
+      } else {
+	prev_input = NULL;
+	prev_input = (char*) realloc(prev_input, length);
+        strncpy(prev_input, input, length);
+      }
+      printf("%s\n", get_word(wordTrie, prev_input));
     }
   }
+  free(prev_input);
 }
 
 
