@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include "trienode.h"
 
@@ -46,12 +47,13 @@ void run_session(trieNode* wordTrie) {
   char* prev_input = NULL;
   int length;
   printf("Enter \"exit\" to quit.\n");
-  while(strncmp(input, "exit", MAXLEN) != 0 && *input != EOF) {
+  while(true) {
     printf("Enter Key Sequence (or \"#\" for next word):\n> ");
-    scanf("%s", input);
+    if(scanf("%s", input) == EOF) { break; }
     length = strlen(input);
+    if(strncmp(input, "exit", length) == 0) { break; }
     if(prev_input == NULL) {
-      prev_input = (char*) malloc(length);
+      prev_input = (char*) malloc(length + 1);
       strncpy(prev_input, input, length);
       printf("%s\n", get_word(wordTrie, input));
     } else {
@@ -66,7 +68,9 @@ void run_session(trieNode* wordTrie) {
       printf("%s\n", get_word(wordTrie, prev_input));
     }
   }
-  free(prev_input);
+  if(prev_input != NULL) {
+    free(prev_input);
+  }
 }
 
 

@@ -45,10 +45,10 @@ trieNode* build_tree(FILE *dict) {
   root = makeNode();
 
   while(fgets(word, MAXLEN, dict)) {
-    length = strlen(word) - 1;
+    length = strlen(word);
     curr = root;
     while(isalpha(word[length - 1]) == 0) { length--; } 
-    temp = (char*) malloc(length);
+    temp = (char*) malloc(length + 1);
     if(temp == NULL) { return NULL; }
     strncpy(temp, word, length);
     for(int i = 0; i < length; i++) {
