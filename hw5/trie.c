@@ -47,9 +47,12 @@ trieNode* build_tree(FILE *dict) {
   while(fgets(word, MAXLEN, dict)) {
     length = strlen(word);
     curr = root;
-    while(isalpha(word[length - 1]) == 0) { length--; } 
-    temp = (char*) malloc(length + 1);
-    if(temp == NULL) { return NULL; }
+    while(isalpha(word[length - 1]) == 0) { length--; } // trim non-alphabet chars 
+    temp = (char*) malloc(length + 1); // add byte for null char
+    if(temp == NULL) { 
+      fprintf(stderr, "Failed to allocate memory while building trie.");
+      exit(1); 
+    } // malloc fail case
     strncpy(temp, word, length);
     for(int i = 0; i < length; i++) {
       branch_index = toNum(word[i]) - BRANCH_OFFSET;

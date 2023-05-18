@@ -38,13 +38,14 @@ int main(int argc, char **argv) {
 
   // clean up
   free_tree(wordTrie);
-  
+  fclose(dictionary);
+
   return(EXIT_SUCCESS);
 }
 
 void run_session(trieNode* wordTrie) {
   char input[MAXLEN];
-  char* prev_input = NULL;
+  char prev_input[MAXLEN] = "";
   int length;
   printf("Enter \"exit\" to quit.\n");
   while(true) {
@@ -52,24 +53,18 @@ void run_session(trieNode* wordTrie) {
     if(scanf("%s", input) == EOF) { break; }
     length = strlen(input);
     if(strncmp(input, "exit", length) == 0) { break; }
-    if(prev_input == NULL) {
-      prev_input = (char*) malloc(length + 1);
+    if(strlen(prev_input) == 0) {
       strncpy(prev_input, input, length);
       printf("%s\n", get_word(wordTrie, input));
     } else {
       if (strncmp(input, "#", length) == 0) {
         strncat(prev_input, input, length);
-	strncpy(input, prev_input, strlen(prev_input - 1));
       } else {
-	prev_input = NULL;
-	prev_input = (char*) realloc(prev_input, length);
+	memset(prev_input, 0, strlen(prev_input));
         strncpy(prev_input, input, length);
       }
       printf("%s\n", get_word(wordTrie, prev_input));
     }
-  }
-  if(prev_input != NULL) {
-    free(prev_input);
   }
 }
 
