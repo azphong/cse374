@@ -1,5 +1,6 @@
- /* trienode.h contains structure and function declarations for 
-   a trie implementation 
+/* trienode.h contains structure and function declarations for 
+   a trie implementation
+   Aaron Hong, 5/17/23   
    CSE374, HW5, 22Wi 
 */
 

@@ -1,6 +1,6 @@
 /* trie implements a trie, made of trieNodes. This includes
    code to build, search, and delete a trie
-   Aaron Hong, 5/16/23
+   Aaron Hong, 5/17/23
    CSE374, HW5, 22wi 
 */
 
@@ -19,6 +19,10 @@ int toNum(char ch);
 
 trieNode* makeNode() {
   trieNode* result = (trieNode*) malloc(sizeof(trieNode));
+  if(result == NULL) {
+    fprintf(stderr, "Memory allocation failed.");
+    exit(1);
+  }
   result -> word = NULL;
   for(int i = 0; i < BRANCHES; i++) {
     result -> branches[i] = NULL;
@@ -40,21 +44,22 @@ trieNode* build_tree(FILE *dict) {
   trieNode* root;
   trieNode* curr;
 
-  if(dict == NULL) { return NULL; }
-
+  if(dict == NULL) { 
+    fprintf(stderr, "Dictionary not found.");
+    exit(1);
+  }
   root = makeNode();
-
   while(fgets(word, MAXLEN, dict)) {
     length = strlen(word);
     curr = root;
     while(isalpha(word[length - 1]) == 0) { length--; } // trim non-alphabet chars 
-    temp = (char*) malloc(length + 1); // add byte for null char
+    temp = (char*) malloc(length + 1); // (extra byte for null char)
     if(temp == NULL) { 
-      fprintf(stderr, "Failed to allocate memory while building trie.");
+      fprintf(stderr, "Memory allocation failed.");
       exit(1); 
-    } // malloc fail case
-    strncpy(temp, word, length); // allocate word
-    temp[length] = '\0'; // allocate null char
+    }
+    strncpy(temp, word, length); // write word to memory
+    temp[length] = '\0'; // set null char
     for(int i = 0; i < length; i++) {
       branch_index = toNum(word[i]) - BRANCH_OFFSET;
       if(curr -> branches[branch_index] == NULL) { 
@@ -68,7 +73,7 @@ trieNode* build_tree(FILE *dict) {
       }
       curr = curr -> branches[BRANCHES - 1];
     }
-    curr -> word = temp;
+    curr -> word = temp; // point trieNode to word
   }
   return root;
 }
@@ -76,16 +81,17 @@ trieNode* build_tree(FILE *dict) {
 char* get_word(trieNode* root, char* pattern) {
   trieNode* result;
   char ch;
-  int trie_index;
+  int ch_int;
+
   result = root;
   for(int i = 0; i < strlen(pattern); i++) {
     ch = pattern[i];
-    trie_index = atoi(&ch) - BRANCH_OFFSET;
-    if(atoi(&ch) >= BRANCH_OFFSET && atoi(&ch) <= BRANCHES) {
-      if(result -> branches[trie_index] == NULL) {
+    ch_int = atoi(&ch); 
+    if(ch_int >= 2 && ch_int <= 9) {
+      if(result -> branches[ch_int - BRANCH_OFFSET] == NULL) {
         return "Not found in current dictionary.";
       }
-      result = result -> branches[trie_index];
+      result = result -> branches[ch_int - BRANCH_OFFSET];
     } else if(ch == '#') {
       if(result -> branches[BRANCHES - 1] == NULL) { 
         return "There are no more T9onyms."; 
