@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 }
 
 void run_session(trieNode* wordTrie) {
-  char input[MAXLEN];
+  char input[MAXLEN] = "";
   char prev_input[MAXLEN] = "";
   int length;
   printf("Enter \"exit\" to quit.\n");

@@ -53,7 +53,8 @@ trieNode* build_tree(FILE *dict) {
       fprintf(stderr, "Failed to allocate memory while building trie.");
       exit(1); 
     } // malloc fail case
-    strncpy(temp, word, length);
+    strncpy(temp, word, length); // allocate word
+    temp[length] = '\0'; // allocate null char
     for(int i = 0; i < length; i++) {
       branch_index = toNum(word[i]) - BRANCH_OFFSET;
       if(curr -> branches[branch_index] == NULL) { 
