@@ -12,6 +12,8 @@
 
 /* initialize global variables ?*/
 
+freeNode* freelist = NULL;
+
 /* Are there helper functions that only getmeme will need?  Declare here. */
 
 /* Define your functions below: */
@@ -22,6 +24,19 @@ void* getmem(uintptr_t size) {
      To get you started we are 'stubbing in' a call that will
      return a usable value.  You will replace this code. */
 
-  return malloc(size);
+   freeNode* curr = freelist;
+   while(curr != NULL) {
+      if(curr -> size > size) {
+         return (void*)curr + NODESIZE;
+      }
+      curr = curr -> next;
+   }
+
+   curr = (freeNode*)malloc(BIGCHUNK);
+   curr -> size = size;
+   curr -> next = freelist;
+   freelist = curr;
+
+   return (void*)curr + NODESIZE;
 }
 
